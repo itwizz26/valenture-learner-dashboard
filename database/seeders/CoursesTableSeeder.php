@@ -45,11 +45,11 @@ class CoursesTableSeeder extends Seeder
         ];
 
         foreach ($courses as $course) {
-            Course::query()->insert([
+            Course::query()->updateOrCreate([
                 'name' => $course,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ], []);
         }
     }
 }
