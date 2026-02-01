@@ -100,6 +100,8 @@ chmod +x ./vendor/bin/pint (give Pint execute permissions just once)
 ./vendor/bin/pint
 ```
 
+Furthermore, the linter has been added as a GitHub action to run a check every time we push code to the repository.
+
 ### Technical Decisions & Architecture
 
 #### Architecture & Patterns
