@@ -66,6 +66,39 @@ Now head on to your favourite browser and open [http://localhost:8000/](http://l
 
 ### Testing the app
 
+Visit [Leaner-progress](http://localhost:8000/learner-progress) in your browser.
+
+
+### Code Quality
+
+To maintain high code quality and PSR-12 compliance, this project uses **Laravel Pint**. 
+
+To run the linter and check any code smells:
+`./vendor/bin/pint`
+
+### Technical Decisions & Architecture
+
+#### Architecture: Modular Monolith
+
+While the challenge is small, I implemented a Service-Repository Pattern to demonstrate a scalable, production-ready architecture. This separates the application into distinct layers:
+
+Controller Layer: Solely responsible for handling HTTP input and returning responses.
+
+Service Layer (Domain): Encapsulates the business logic (filtering and sorting logic). This makes the logic reusable for API endpoints or Console commands.
+
+Repository Layer (Infrastructure): Abstracts the Eloquent queries. This allows the underlying data source to be swapped (e.g., from SQLite to a remote API or a different SQL dialect) without touching the business logic.
+
+Form Requests: Implemented for strict input validation and to ensure the application boundaries are secure.
+
+#### Key Engineering Principles Applied
+
+Dependency Injection & Inversion of Control: I used Laravel's Service Container to bind LearnerRepositoryInterface to EloquentLearnerRepository. This adheres to the Dependency Inversion Principle (SOLID).
+
+Performance (N+1 Prevention): I utilized Eager Loading (with(['courses'])) to ensure that regardless of the number of learners, the application executes a constant number of database queries.
+
+Database-Level Sorting: Sorting by progress (a pivot table attribute) is handled via SQL Joins in the repository. This is significantly more performant than sorting Collections in PHP memory, especially as the dataset grows.
+
+Strict Typing: Every class uses declare(strict_types=1); and full type-hinting to ensure code reliability and better IDE support.
 
 ### Copyright
 

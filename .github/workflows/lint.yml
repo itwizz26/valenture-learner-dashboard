@@ -1,0 +1,13 @@
+name: Fix Code Style
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: PHP Lint (Pint)
+        uses: aglipanci/laravel-pint-action@1.0.0
