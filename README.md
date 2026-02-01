@@ -1,8 +1,6 @@
 # Learner Progress Dashboard - Coding Challenge
 
-The goal of this coding challenge is to add some new functionality to the given simple
-full-stack web application to allow a user to view learner course progress on a new
-dashboard. The dashboard should allow basic filterin
+The goal of this coding challenge is to add some new functionality to the given simple full-stack web application to allow a user to view learner course progress on a new dashboard. The dashboard should allow basic filterin
 
 ## Tech stack
 
@@ -12,6 +10,7 @@ PHP 8.5
 SQLite
 Inertia/Vue 3
 Tailwind CSS v4
+
 ```
 
 ## Getting Started
@@ -50,8 +49,9 @@ Why this is happening?
 ### Running the solution
 
 #### The Server/API - Laravel
+
 1. Run `composer install`
-2. Configure your `.env` file from the example. Ensure this SQLite database connection string is present inside your .env `DB_CONNECTION=sqlite`
+2. Configure your `.env` file from the example. Ensure this SQLite database connection string is present inside your .env `DB_CONNECTION=sqlite`. Make sure the database.sqlite file exists. Run `touch database/database.sqlite`
 3. Generate the App Key: `php artisan key:generate`
 4. Run migrations and seeders: `php artisan migrate --seed`
 5. Start the development server: `php artisan serve`
@@ -61,52 +61,52 @@ Now head on to your favourite browser and open [http://localhost:8000/](http://l
 #### The Client/UI - Vue.js
 
 1. Run `npm install`
-2. run `npm run start`
-
+2. Run `npm run build`
+3. Run `npm run dev`
 
 ### Testing the app
 
-Visit [Leaner-progress](http://localhost:8000/learner-progress) in your browser.
-
+Visit [Leaner-progress](http://localhost:8000/learner-progress) in your browser and click around. Happy browsing!
 
 ### Code Quality
 
 To maintain high code quality and PSR-12 compliance, this project uses **Laravel Pint**. 
 
 To run the linter and check any code smells:
-`./vendor/bin/pint`
+```
+chmod +x ./vendor/bin/pint
+./vendor/bin/pint
+```
 
 ### Technical Decisions & Architecture
 
-#### Architecture: Modular Monolith
+#### Architecture & Patterns
 
-While the challenge is small, I implemented a Service-Repository Pattern to demonstrate a scalable, production-ready architecture. This separates the application into distinct layers:
+I opted for a Service-Repository Pattern even though it's a challenge. Why? Because "Fat Controllers" are where technical debt goes to hide.
 
-Controller Layer: Solely responsible for handling HTTP input and returning responses.
+Controller: Just the traffic cop. It validates the request and asks the Service for data.
 
-Service Layer (Domain): Encapsulates the business logic (filtering and sorting logic). This makes the logic reusable for API endpoints or Console commands.
+Service Layer: This is where the filtering and sorting "brains" live. By moving this out of the controller, we can easily trigger the same logic for the PDF export or a CLI command without duplicating code.
 
-Repository Layer (Infrastructure): Abstracts the Eloquent queries. This allows the underlying data source to be swapped (e.g., from SQLite to a remote API or a different SQL dialect) without touching the business logic.
+Repository Layer: Abstracts the data fetch. I used a LearnerRepositoryInterface bound in the AppServiceProvider. If we ever move from SQLite to a high-scale Document Store or an external API, we just swap the implementation.
 
-Service-Repository Pattern: Decouples business logic from Eloquent, making the code unit-testable and maintainable.
-
-Form Requests: Implemented for strict input validation and to ensure the application boundaries are secure.
-
-Eager Loading: Used `with(['courses'])` to ensure the application avoids N+1 query issues, maintaining performance regardless of dataset size.
+Performance: I solved the N+1 problem using Eager Loading and handled the progress sorting at the Database Level (SQL Joins) rather than in PHP memory. This ensures the app stays snappy even if the learner count hits the thousands.
 
 ##### Frontend UI decisions
 
 Inertia.js: Chosen to provide a Single Page Application (SPA) experience without the complexity of a separate API/JWT setup.
 
-Tailwind v4 JIT: Utilized the latest CSS engine for high-performance styling and minimal bundle size.
+Tailwind v4 JIT: Utilized the latest CSS engine for high-performance styling and minimal bundle size. Also makes the glassmorphic dashboard UI render faster on mobile devices.
 
-Vite: Compiles and caches css and js in public/build/assets (our SPA loads faster)
+Vite: Compiles and caches css and js in `./public/build/assets/` (our overall SPA loads faster)
+
+PDF Export Logic: Implemented PDF download using dompdf. The export functionality reuses the `ProgressService` class to ensure that whatever filters the user has applied on the screen are exactly what appears in the generated report.
 
 #### Key Engineering Principles Applied
 
 Dependency Injection & Inversion of Control: I used Laravel's Service Container to bind LearnerRepositoryInterface to EloquentLearnerRepository. This adheres to the Dependency Inversion Principle (SOLID).
 
-Performance (N+1 Prevention): I utilized Eager Loading (with(['courses'])) to ensure that regardless of the number of learners, the application executes a constant number of database queries.
+Performance (N+1 Prevention): I utilized Eager Loading `(with(['courses']))` to ensure that regardless of the number of learners, the application executes a constant number of database queries.
 
 Database-Level Sorting: Sorting by progress (a pivot table attribute) is handled via SQL Joins in the repository. This is significantly more performant than sorting Collections in PHP memory, especially as the dataset grows.
 

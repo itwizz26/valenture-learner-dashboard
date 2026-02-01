@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Models\Learner;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class EloquentLearnerRepository implements LearnerRepositoryInterface
 {
@@ -22,19 +23,22 @@ class EloquentLearnerRepository implements LearnerRepositoryInterface
                 }
             }]);
 
-        if ($courseId || $sortBy) {
-            $query->join('enrolments', 'learners.id', '=', 'enrolments.learner_id');
+        if ($courseId) {
+            $query->whereHas('courses', function ($q) use ($courseId) {
+                $q->where('courses.id', $courseId);
+            });
+        }
 
-            if ($courseId) {
-                $query->where('enrolments.course_id', $courseId);
-            }
+        if ($sortBy === 'desc' || $sortBy === 'asc') {
+            $direction = ($sortBy === 'desc') ? 'desc' : 'asc';
 
-            if ($sortBy) {
-                $direction = ($sortBy === 'progress_desc') ? 'DESC' : 'ASC';
-                $query->orderBy('enrolments.progress', $direction);
-            }
-
-            $query->distinct();
+            $query->addSelect([
+                'sort_progress' => DB::table('enrolments')
+                    ->select('progress')
+                    ->whereColumn('learner_id', 'learners.id')
+                    ->when($courseId, fn ($q) => $q->where('course_id', $courseId))
+                    ->limit(1),
+            ])->orderBy('sort_progress', $direction);
         }
 
         return $query->get();
