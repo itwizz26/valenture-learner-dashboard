@@ -8,5 +8,9 @@ Route::get('/', function () {
 });
 
 Route::get('/learner-progress', [
-    LearnerProgressController::class, 'index'
+    LearnerProgressController::class, 'index',
 ])->name('learner-progress.index');
+
+Route::get('/learner-progress/export', [
+    LearnerProgressController::class, 'export',
+])->name('learner-progress.export');

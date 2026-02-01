@@ -42,6 +42,14 @@
         state.course_id = '';
         state.sort_by = '';
     };
+
+    const getExportUrl = () => {
+        const params = new URLSearchParams({
+            course_id: state.course_id,
+            sort_by: state.sort_by
+        });
+        return `/learner-progress/export?${params.toString()}`;
+    };
 </script>
 
 <template>
@@ -50,10 +58,10 @@
     <div class="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 p-4 md:p-8 text-slate-900 font-sans">
         <div class="max-w-5xl mx-auto">
             <h1 class="text-4xl font-extrabold tracking-tight mb-8 text-center text-slate-800 drop-shadow-sm">
-                Learner Progress Dashboard
+                Learner Progress Dashboard 1.0
             </h1>
 
-            <div class="sticky top-6 z-50 bg-white/60 backdrop-blur-xl p-6 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 mb-10 flex flex-wrap gap-6 items-end transition-all duration-500">
+            <div class="sticky top-6 z-50 bg-white/60 backdrop-blur-xl p-6 rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 mb-10 flex flex-wrap gap-6 items-center transition-all duration-500">
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2 ml-1">Filter By Course</label>
                     <select v-model="state.course_id" class="w-full bg-white/40 border-white/80 backdrop-blur-md rounded-xl text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent p-3 transition-all cursor-pointer hover:bg-white/60">
@@ -71,6 +79,16 @@
                         <option value="desc">Highest Progress First</option>
                         <option value="asc">Lowest Progress First</option>
                     </select>
+                </div>
+
+                <div class="w-full md:w-auto self-end md:self-center pt-2 md:pt-4">
+                    <a :href="getExportUrl()" 
+                       class="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-1 active:scale-95 w-full md:w-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        Export PDF
+                    </a>
                 </div>
             </div>
 
