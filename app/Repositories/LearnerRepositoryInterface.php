@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
+
+use Illuminate\Support\Collection;
 
 interface LearnerRepositoryInterface
 {
-    public function getLearnersWithProgress(array $filters = [], ?string $sortBy = null);
+    /**
+     * Only expect the filters array.
+     */
+    public function getLearnersWithProgress(array $filters = []): Collection;
 }

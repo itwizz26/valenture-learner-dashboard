@@ -10,8 +10,8 @@ dashboard. The dashboard should allow basic filterin
 Laravel 12
 PHP 8.5
 SQLite
-Vue Js
-Tailwind Css
+Inertia/Vue 3
+Tailwind CSS v4
 ```
 
 ## Getting Started
@@ -88,7 +88,19 @@ Service Layer (Domain): Encapsulates the business logic (filtering and sorting l
 
 Repository Layer (Infrastructure): Abstracts the Eloquent queries. This allows the underlying data source to be swapped (e.g., from SQLite to a remote API or a different SQL dialect) without touching the business logic.
 
+Service-Repository Pattern: Decouples business logic from Eloquent, making the code unit-testable and maintainable.
+
 Form Requests: Implemented for strict input validation and to ensure the application boundaries are secure.
+
+Eager Loading: Used `with(['courses'])` to ensure the application avoids N+1 query issues, maintaining performance regardless of dataset size.
+
+##### Frontend UI decisions
+
+Inertia.js: Chosen to provide a Single Page Application (SPA) experience without the complexity of a separate API/JWT setup.
+
+Tailwind v4 JIT: Utilized the latest CSS engine for high-performance styling and minimal bundle size.
+
+Vite: Compiles and caches css and js in public/build/assets (our SPA loads faster)
 
 #### Key Engineering Principles Applied
 

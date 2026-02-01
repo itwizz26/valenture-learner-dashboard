@@ -1,38 +1,44 @@
 <script setup>
-import { ref, watch } from 'vue';
-import { router } from '@inertiajs/vue3';
-import debounce from 'lodash/debounce';
+    import { Head, router, useForm } from '@inertiajs/vue3';
+    import { watch } from 'vue';
+    import debounce from 'lodash/debounce';
 
-const props = defineProps({
-    learners: Array,
-    courses: Array,
-    filters: Object
-});
-
-const form = ref({
-    course_id: props.filters.course_id || '',
-    sort_by: props.filters.sort_by || ''
-});
-
-watch(form, debounce(() => {
-    router.get('/learner-progress', form.value, { 
-        preserveState: true, 
-        replace: true 
+    const props = defineProps({
+        learners: Array,
+        courses: Array,
+        filters: Object
     });
-}, 300), { deep: true });
 
-const getProgressBarColor = (progress) => {
-    if (progress >= 80) return 'bg-green-500';
-    if (progress >= 50) return 'bg-blue-500';
-    return 'bg-amber-500';
-};
+    const form = useForm({
+        course_id: props.filters?.course_id || '',
+        sort_by: props.filters?.sort_by || '',
+    });
 
-const getInitials = (name) => {
-    return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
-};
+    watch(() => [form.course_id, form.sort_by], debounce(() => {
+        router.get(route('learner-progress.index'), {
+            course_id: form.course_id,
+            sort_by: form.sort_by
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    }, 150));
+
+    const getProgressBarColor = (progress) => {
+        if (progress >= 80) return 'bg-green-500';
+        if (progress >= 50) return 'bg-blue-500';
+        return 'bg-amber-500';
+    };
+
+    const getInitials = (name) => {
+        return name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+    };
 </script>
 
 <template>
+    <Head title="Dashboard" />
+    
     <div class="min-h-screen bg-slate-50 p-8 text-slate-900 font-sans">
         <div class="max-w-5xl mx-auto">
             <h1 class="text-4xl font-extrabold tracking-tight mb-8">Learner Progress Dashboard</h1>
@@ -40,7 +46,7 @@ const getInitials = (name) => {
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8 flex flex-wrap gap-6 items-end">
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Filter By Course</label>
-                    <select v-model="form.course_id" class="w-full border-slate-200 rounded-xl focus:ring-blue-500 focus:border-blue-500">
+                    <select v-model="form.course_id" class="...">
                         <option value="">All Courses</option>
                         <option v-for="course in courses" :key="course.id" :value="course.id">
                             {{ course.name }}
@@ -49,11 +55,11 @@ const getInitials = (name) => {
                 </div>
 
                 <div class="flex-1 min-w-[200px]">
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Sort Progress</label>
-                    <select v-model="form.sort_by" class="w-full border-slate-200 rounded-xl focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Default (Latest)</option>
-                        <option value="progress_desc">Highest First</option>
-                        <option value="progress_asc">Lowest First</option>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Sort By Progress</label>
+                    <select v-model="form.sort_by" class="...">
+                        <option value="">Default (Join Date)</option>
+                        <option value="progress_desc">Highest Progress First</option>
+                        <option value="progress_asc">Lowest Progress First</option>
                     </select>
                 </div>
             </div>
