@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProgressRequest;
 use App\Services\ProgressService;
+use App\Models\Course;
 use Inertia\Inertia;
 
 class LearnerProgressController
