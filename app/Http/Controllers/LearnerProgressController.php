@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProgressRequest;
-use App\Services\ProgressService;
 use App\Models\Course;
+use App\Services\ProgressService;
 use Inertia\Inertia;
 
 class LearnerProgressController
@@ -16,8 +16,8 @@ class LearnerProgressController
 
         return Inertia::render('LearnerProgress/Index', [
             'learners' => $service->getDashboardData($request->validated()),
-            'courses'  => Course::all(),
-            'filters'  => $request->only(['course_id', 'sort_by']),
+            'courses' => Course::all(),
+            'filters' => $request->only(['course_id', 'sort_by']),
         ]);
     }
 }
